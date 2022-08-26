@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
+
 #AbstractBaseUser -> this class allows us to take full control of the custom user model
 # Create your models here.
 class UserManager(BaseUserManager):
