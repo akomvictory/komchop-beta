@@ -65,6 +65,21 @@
                                             </div>
                                         </li>
                                         <li>
+                                            <!--  -->
+                                            <!-- display validation error on form submition -->
+                                            <ul class="errorlist"> 
+                                                {% for field in form %}  <!-- loop through form fields  -->
+                                                    {% if field.errors %}  <!-- check if form fields contains errors  -->
+                                                        {% for error in field.errors %}  <!-- loop through the error in form field  -->
+                                                            <li style="color:#88305a">{{error}}</li>  <!-- display error message  -->
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                              
+                                                <li style="color:#88305a"> {{form.non_field_errors}} </li> <!-- to display error validation for non field error like confirm password -->
+
+                                            </ul>
+
                                             <div class="row">
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                     <div class="field-holder">

@@ -13,9 +13,13 @@ def registerUser(request):
             user.role = User.CUSTOMER # here we use the user object we created to assigned newly registered user as customer defaultly
             user.save() # here we save the user registerUser
             return redirect('registerUser')       # this will execute if request type from user is POST
+        else: # this will executed if user data  does not validate true
+            print(form.errors)   
     else:                           # this will execute if request type from user is GET
         form = UserForm() #we use the User model form to make fields for the HTML register template
-        context = {
-            'form': form,
-        }
+    
+    context = { #the context dictionary is set on GET or POST request
+        'form': form,
+    }
+
     return render(request, 'accounts/registerUser.html', context)
