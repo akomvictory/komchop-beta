@@ -1,5 +1,5 @@
-from django.core.exceptions import ValidationError
-from django import forms
+from django.core.exceptions import ValidationError # we import ValidationError
+from django import forms # we import django form library to bind with our fields
 from .models import User
 
 # The django forms feature enable us create html form out of our models fields

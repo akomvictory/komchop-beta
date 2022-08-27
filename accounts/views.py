@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .forms import UserForm
 from .models import User
+from django.contrib import messages # we import messages library to give feedback when new user is created
+
 # Create your views here.
 
 def registerUser(request):
@@ -12,6 +14,7 @@ def registerUser(request):
             user.set_password(password) # here we hash the user provided password
             user.role = User.CUSTOMER # here we use the user object we created to assigned newly registered user as customer defaultly
             user.save() # here we save the user registerUser
+            messages.success(request, 'User account has been created successfully') # give output when user is successfully created
             return redirect('registerUser')       # this will execute if request type from user is POST
         else: # this will executed if user data  does not validate true
             print(form.errors)   
