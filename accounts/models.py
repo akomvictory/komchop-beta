@@ -45,7 +45,7 @@ class User(AbstractBaseUser):
     CUSTOMER = 2
 
     ROLE_CHOICE = (
-        (VENDOR, 'Restaurant'),
+        (VENDOR, 'Vendor'),
         (CUSTOMER, 'Customer'),
     )
     first_name = models.CharField(max_length=50)
@@ -60,10 +60,10 @@ class User(AbstractBaseUser):
     last_login = models.DateTimeField(auto_now_add=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
-    is_admin = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=True)
-    is_active = models.BooleanField(default=True)
-    ls_superadmin = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    ls_superadmin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email' # set email as field to authenticate user
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name'] # we set the required fields 
