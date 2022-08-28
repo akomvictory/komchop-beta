@@ -9,7 +9,10 @@ from django.contrib import auth, messages # we import messages library to give f
 # Create your views here.
 
 def registerUser(request):
-    if request.method == 'POST': # we check the request type from user
+    if request.user.is_authenticated: #check if user is already logged in
+        messages.warning(request, 'You are already logged in')
+        return redirect('dashboard')
+    elif request.method == 'POST': # we check the request type from user
         form = UserForm(request.POST) #we use the the request body as our form data
         if form.is_valid():
             password = form.cleaned_data['password'] #here we clean password value from user
@@ -31,7 +34,10 @@ def registerUser(request):
     return render(request, 'accounts/registerUser.html', context)
     
 def registerVendor(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated: #check if user is already logged in
+        messages.warning(request, 'You are already logged in')
+        return redirect('dashboard')
+    elif request.method == 'POST':
         #store the data and create the user
         form = UserForm(request.POST) # here we get post data from the user form
         v_form = VendorForm(request.POST, request.FILES) # here we get post data from the vendor form, with vendor license using (request.FILES)
@@ -65,7 +71,10 @@ def registerVendor(request):
 
 
 def login(request):
-    if request.method == 'POST': #here we check if the it a post request
+    if request.user.is_authenticated: #check if user is already logged in
+        messages.warning(request, 'You are already logged in')
+        return redirect('dashboard')
+    elif request.method == 'POST': #here we check if the it a post request
         email = request.POST['email']
         password = request.POST['password']
 
