@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 from vendor.forms import VendorForm
 from .forms import UserForm
 from .models import User, UserProfile
-from django.contrib import messages # we import messages library to give feedback when new user is created
+from django.contrib import auth, messages # we import messages library to give feedback when new user is created
+#we import auth library to authenticate user
 
 # Create your views here.
 
@@ -64,11 +65,28 @@ def registerVendor(request):
 
 
 def login(request):
+    if request.method == 'POST': #here we check if the it a post request
+        email = request.POST['email']
+        password = request.POST['password']
+
+        user = auth.authenticate(email=email, password=password) # here we authenticate the user with provided email & password
+
+        if user is not None: # this will check that login fields are registered
+            auth.login(request, user) # here we log in the user
+            messages.success(request, 'You are now logged in') # give output when user is successfully logged in
+            return redirect('dashboard') #we redirect user to the dashboard page
+
+        else: # executes when login details are incorrect
+            messages.error(request, 'Invalid login credentials') # give output when user provides invalid login details
+        return redirect('login') #we redirect user back to the login page
+
     return render(request, 'accounts/login.html')
 
 
 def logout(request):
-    return render(request, 'accounts/logout.html')
+    auth.logout(request)
+    messages.info(request, 'You are logged out')
+    return redirect('login')
 
 
 def dashboard(request):
