@@ -41,11 +41,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    RESTAURANT = 1
+    VENDOR = 1
     CUSTOMER = 2
 
     ROLE_CHOICE = (
-        (RESTAURANT, 'Restaurant'),
+        (VENDOR, 'Restaurant'),
         (CUSTOMER, 'Customer'),
     )
     first_name = models.CharField(max_length=50)
@@ -68,7 +68,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email' # set email as field to authenticate user
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name'] # we set the required fields 
 
-    object = UserManager()
+    objects = UserManager()
 
     def __str__(self):    
         return self.email
