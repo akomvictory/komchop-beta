@@ -6,6 +6,9 @@ from .models import User, UserProfile
 from django.contrib import auth, messages # we import messages library to give feedback when new user is created
 #we import auth library to authenticate user
 
+from .utils import detectUser #import utils file
+from django.contrib.auth.decorators import login_required #decorator accessible to only logged in users
+
 # Create your views here.
 
 def registerUser(request):
@@ -73,8 +76,8 @@ def registerVendor(request):
 def login(request):
     if request.user.is_authenticated: #check if user is already logged in
         messages.warning(request, 'You are already logged in')
-        return redirect('dashboard')
-    elif request.method == 'POST': #here we check if the it a post request
+        return redirect('myAccount')
+    elif request.method == 'POST': #here we check if it a post request and user is not yet logged in
         email = request.POST['email']
         password = request.POST['password']
 
@@ -83,7 +86,7 @@ def login(request):
         if user is not None: # this will check that login fields are registered
             auth.login(request, user) # here we log in the user
             messages.success(request, 'You are now logged in') # give output when user is successfully logged in
-            return redirect('dashboard') #we redirect user to the dashboard page
+            return redirect('myAccount') #we redirect user to the dashboard page
 
         else: # executes when login details are incorrect
             messages.error(request, 'Invalid login credentials') # give output when user provides invalid login details
@@ -97,8 +100,18 @@ def logout(request):
     messages.info(request, 'You are logged out')
     return redirect('login')
 
+@login_required(login_url='login') #only logged in users can access this view
+def myAccount(request):
+    user = request.user # gets current logged in user
+    redirectUrl = detectUser(user) # detects page to redirect logged in user to
+    return redirect(redirectUrl)
 
-def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+@login_required(login_url='login') #only logged in users can access this view
+def custDashboard(request):
+    return render(request, 'accounts/custDashboard.html')
+
+@login_required(login_url='login') #only logged in users can access this view
+def vendorDashboard(request):
+    return render(request, 'accounts/vendorDashboard.html')    
 
 

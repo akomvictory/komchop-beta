@@ -79,6 +79,12 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
+    def get_role(self): #this function will determine what role is the logged in user, so as to redirect different users to different page after successful login
+        if self.role == 1:
+            user_role = 'Vendor'
+        elif self.role == 2:
+            user_role = 'Customer'
+        return user_role        
 
 
 class UserProfile(models.Model):
