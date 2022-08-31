@@ -1,4 +1,6 @@
+from base64 import urlsafe_b64decode
 from django.shortcuts import render, redirect
+from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import PermissionDenied #permission library to restrict access
 
 from vendor.forms import VendorForm
@@ -7,7 +9,7 @@ from .models import User, UserProfile
 from django.contrib import auth, messages # we import messages library to give feedback when new user is created
 #we import auth library to authenticate user
 
-from .utils import detectUser #import utils file
+from .utils import detectUser, send_verification_email #import functions from utils file
 from django.contrib.auth.decorators import login_required, user_passes_test #decorator accessible to only logged in users and users that passes test on certain criteria
 
 #Restrict the vendor from accessing the customer page
@@ -31,7 +33,7 @@ def check_role_customer(user):
 def registerUser(request):
     if request.user.is_authenticated: #check if user is already logged in
         messages.warning(request, 'You are already logged in')
-        return redirect('dashboard')
+        return redirect('myAccount')
     elif request.method == 'POST': # we check the request type from user
         form = UserForm(request.POST) #we use the the request body as our form data
         if form.is_valid():
@@ -40,6 +42,10 @@ def registerUser(request):
             user.set_password(password) # here we hash the user provided password
             user.role = User.CUSTOMER # here we use the user object we created to assigned newly registered user as customer defaultly
             user.save() # here we save the user registerUser
+
+            #send verification email
+            send_verification_email(request, user)
+
             messages.success(request, 'User account has been created successfully') # give output when user is successfully created
             return redirect('registerUser')       # this will execute if request type from user is POST
         else: # this will executed if user data  does not validate true
@@ -75,6 +81,8 @@ def registerVendor(request):
             user_profile = UserProfile.objects.get(user=user) # this will bring user profile for the user
             vendor.user_profile = user_profile
             vendor.save()
+            send_verification_email(request, user) # sent email verification to user
+
             messages.success(request, 'User account has been created successfully! Please wait for approval') # give output when user is successfully created
             return redirect('registerVendor')
         else:
@@ -88,6 +96,25 @@ def registerVendor(request):
         'v_form': v_form
     }
     return render(request, 'accounts/registerVendor.html', context)    
+
+
+def activate(request, uidb64, token):
+    #activate the user by setting the is_active status to True
+    try:
+        uid = urlsafe_b64decode(uidb64).decode() #we get user uidcode via get method
+        user = User._default_manager.get(pk=uid) # get the user we want to activate
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist): # if we get any error regarding the user 
+        User = None # we set user as not found
+    if user is not None and default_token_generator.check_token(user, token): # we validate the user token
+        user.is_active = True # set user active state to true
+        user.save()
+        messages.success(request, "Congratulation your account is activated")
+        return redirect('myAccount')
+    else:
+        messages.error(request, "Invalid activation link")
+        return redirect('myAccount')
+
+
 
 
 def login(request):
