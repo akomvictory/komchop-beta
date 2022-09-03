@@ -1,6 +1,7 @@
+from dataclasses import field
 from django.core.exceptions import ValidationError # we import ValidationError
 from django import forms # we import django form library to bind with our html fields
-from .models import User
+from .models import User, UserProfile
 
 # The django forms feature enable us create html form out of our models fields
 class UserForm(forms.ModelForm):
@@ -20,3 +21,10 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError(
                 "Password does not match"
             )
+
+class UserProfileForm(forms.ModelForm):
+    profile_picture = forms.ImageField(widget=forms.FileInput(attrs={'class': 'btn btn-info'})) #we difine the css styling for the profile pic input field
+    cover_photo = forms.ImageField(widget=forms.FileInput(attrs={'class': 'btn btn-info'})) #we difine the css styling for the cover photo pic input field
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture', 'cover_photo', 'address_line_1', 'address_line_2', 'country', 'state', 'city', 'pin_code', 'latitude', 'longitude']
